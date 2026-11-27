@@ -1,14 +1,1 @@
-{
-  "id": "/?colegio=arboleda",
-  "name": "Colegio Integral La Arboleda",
-  "short_name": "La Arboleda",
-  "start_url": "./?colegio=arboleda",
-  "scope": "./?colegio=arboleda",
-  "display": "standalone",
-  "background_color": "#DCECE2",
-  "theme_color": "#006A7A",
-  "icons": [
-    { "src": "media/arb.png", "sizes": "192x192", "type": "image/png", "purpose": "any maskable" },
-    { "src": "media/arb.png", "sizes": "512x512", "type": "image/png", "purpose": "any maskable" }
-  ]
-}
+
