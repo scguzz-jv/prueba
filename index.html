@@ -34,7 +34,7 @@
                 isStandalone: isStandalone,
                 isIsolatedApp: isStandalone,
                 isIOS: isIOS,
-                isInstallMode: params.get('install') === 'true' // 👈 NUEVO: Detecta modo instalación
+                isInstallMode: params.get('install') === 'true' // 👈 Detecta modo instalación
             };
 
             var themeEl = document.getElementById('dynamic-theme-color');
@@ -67,13 +67,8 @@
             --primary: #1D8FE1;
             --secondary: #6CC02E;
             --accent: #FFD015;
-            --glass-surface: rgba(255, 255, 255, 0.66);
-            --glass-surface-strong: rgba(255, 255, 255, 0.82);
-            --glass-highlight: rgba(255, 255, 255, 0.96);
-            --glass-outline: rgba(53, 194, 214, 0.42);
             --text-main: #1A2233;
             --text-muted: #3A465E;
-            --radius-lg: 24px;
         }
 
         body.theme-arboleda {
@@ -84,10 +79,6 @@
             --primary: #006A7A;
             --secondary: #2E9F19;
             --accent: #FDC101;
-            --glass-surface: rgba(255, 255, 255, 0.70);
-            --glass-surface-strong: rgba(255, 255, 255, 0.84);
-            --glass-highlight: rgba(255, 255, 255, 0.96);
-            --glass-outline: rgba(46, 159, 25, 0.35);
             --text-main: #182622;
             --text-muted: #374B44;
         }
@@ -119,16 +110,20 @@
 
         .arb-g { color: #2E9F19; } .arb-t { color: #006A7A; } .arb-y { color: #D99B00; }
 
-        /* Estilos del Modo Instalación */
+        /* PANTALLA DE INSTALACIÓN */
         #install-screen {
             display: flex; flex-direction: column; align-items: center; justify-content: center;
-            position: fixed; inset: 0; background: var(--bg-mesh); z-index: 9999; padding: 20px; text-align: center;
+            position: fixed; inset: 0; z-index: 99999; padding: 20px; text-align: center;
+            background-color: var(--bg-base); background-image: var(--bg-mesh);
         }
-        .install-card { background: #fff; padding: 40px 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.1); max-width: 400px; width: 100%; border: 3px solid var(--primary); }
-        .btn-native { background: var(--primary); color: #fff; border: none; padding: 16px 20px; border-radius: 12px; font-size: 18px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; }
+        .install-card { background: #fff; padding: 40px 30px; border-radius: 24px; box-shadow: 0 10px 40px rgba(0,0,0,0.15); max-width: 420px; width: 100%; border-top: 6px solid var(--primary); position: relative; }
+        .btn-native { background: var(--primary); color: #fff; border: none; padding: 16px 20px; border-radius: 12px; font-size: 18px; font-weight: bold; width: 100%; cursor: pointer; margin-top: 20px; display: flex; align-items: center; justify-content: center; gap: 10px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
         .btn-native:active { transform: scale(0.98); }
+        .fallback-alert { display: none; margin-top: 20px; background: #fef2f2; padding: 15px; border-radius: 10px; border: 1px solid #f87171; text-align: left; }
+        .fallback-alert h4 { color: #b91c1c; margin-bottom: 5px; font-size: 14px; }
+        .fallback-alert p { color: #7f1d1d; font-size: 13px; line-height: 1.4; }
 
-        /* Interfaz normal */
+        /* INTERFAZ NORMAL */
         header { position: sticky; top: 0; z-index: 100; box-shadow: 0 8px 24px rgba(15, 23, 42, 0.14); }
         .banner-top { background: var(--header-glass); padding: 10px 0; border-bottom: 2.5px solid var(--accent); }
         .banner-inner { display: flex; flex-wrap: wrap; align-items: center; justify-content: space-between; gap: 14px; }
@@ -152,10 +147,10 @@
         .grid-3 { display: grid; grid-template-columns: repeat(3, 1fr); gap: 20px; margin-top: 20px; }
         .card { background: #fff; padding: 20px; border-radius: 15px; box-shadow: 0 4px 15px rgba(0,0,0,0.05); border-top: 5px solid var(--primary); }
 
-        /* Modal */
         .modal-backdrop { position: fixed; inset: 0; background: rgba(0,0,0,0.6); backdrop-filter: blur(5px); z-index: 1000; display: flex; align-items: center; justify-content: center; padding: 20px; }
         .modal-card { background: #fff; padding: 30px; border-radius: 20px; max-width: 500px; width: 100%; text-align: center; position: relative; }
-        .app-option { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 15px; margin: 10px 0; border: 2px solid #e2e8f0; text-align: left; cursor: pointer; text-decoration: none; color: inherit; transition: border-color 0.2s; }
+        
+        .app-option { display: flex; align-items: center; gap: 15px; background: #f8fafc; padding: 15px; border-radius: 15px; margin: 10px 0; border: 2px solid #e2e8f0; text-align: left; cursor: pointer; text-decoration: none; color: inherit; transition: border-color 0.2s; width: 100%; font-family: inherit; }
         .app-option:hover { border-color: var(--primary); background: #f1f5f9; }
         .app-option img { width: 50px; height: 50px; object-fit: contain; }
         
@@ -170,15 +165,21 @@
 </head>
 <body>
 
-    <!-- PANTALLA DE INSTALACIÓN (Solo se ve si la URL tiene ?install=true) -->
+    <!-- PANTALLA DE INSTALACIÓN EXCLUSIVA -->
     <div id="install-screen" class="hidden">
         <div class="install-card">
-            <img id="install-logo" src="" alt="Logo" style="width: 120px; height: 120px; object-fit: contain; margin-bottom: 15px;">
+            <img id="install-logo" src="" alt="Logo" style="width: 100px; height: 100px; object-fit: contain; margin-bottom: 15px;">
             <h2 id="install-title" style="margin-bottom: 5px;"></h2>
-            <p id="install-desc" style="color: #666; font-size: 14px; margin-bottom: 20px;"></p>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Instala la aplicación oficial en tu pantalla de inicio para acceder más rápido.</p>
+            
             <button id="btn-native-install" class="btn-native">📲 Instalar Aplicación</button>
-            <button onclick="window.location.href='./'" style="background: none; border: none; color: #888; margin-top: 15px; cursor: pointer; font-size: 13px;">Cancelar</button>
-            <p id="install-status" style="margin-top: 15px; color: #16a34a; font-size: 13px; font-weight: bold;"></p>
+            
+            <div id="fallback-alert" class="fallback-alert">
+                <h4>⚠️ Aviso automático bloqueado por Chrome</h4>
+                <p>Si el botón no hace nada, por favor toca los <b>3 puntos (⋮)</b> arriba a la derecha en Chrome y selecciona <b>"Instalar aplicación"</b> o <b>"Agregar a pantalla principal"</b>.</p>
+            </div>
+
+            <button onclick="window.location.href='./'" style="background: none; border: none; color: #888; margin-top: 20px; cursor: pointer; font-size: 13px;">Cancelar y volver a la web</button>
         </div>
     </div>
 
@@ -240,35 +241,36 @@
         <div class="grid-3" id="levels-cards-grid"></div>
     </section>
 
-    <!-- MODAL DE DESCARGA -->
+    <!-- MODAL DE DESCARGA (AQUÍ SELECCIONAN EL COLEGIO) -->
     <div id="app-download-modal" class="modal-backdrop hidden">
         <div class="modal-card">
             <button onclick="closeAppDownloadModal()" style="position: absolute; top: 15px; right: 15px; background: #f1f5f9; border: none; width: 30px; height: 30px; border-radius: 50%; font-size: 16px; cursor: pointer;">✕</button>
             <h2 style="margin-bottom: 5px;">Descargar Aplicación</h2>
-            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Elige el colegio que deseas instalar en tu celular. Ambas apps funcionan de forma independiente.</p>
+            <p style="color: #666; font-size: 14px; margin-bottom: 20px;">Elige el colegio que deseas instalar. Ambas apps son independientes.</p>
             
-            <a id="btn-install-seeds" href="#" class="app-option">
+            <!-- Botones que redirigen a la pantalla de instalación -->
+            <button onclick="goToInstall('seeds')" class="app-option">
                 <img src="media/lit.png" alt="Little Seeds">
                 <div>
                     <div style="font-size: 11px; font-weight: bold; color: var(--primary);">APP INDEPENDIENTE</div>
                     <div style="font-size: 16px; font-weight: bold;">Little Seeds Montessori</div>
                 </div>
-            </a>
+            </button>
 
-            <a id="btn-install-arboleda" href="#" class="app-option">
+            <button onclick="goToInstall('arboleda')" class="app-option">
                 <img src="media/arb.png" alt="La Arboleda">
                 <div>
                     <div style="font-size: 11px; font-weight: bold; color: var(--primary);">APP INDEPENDIENTE</div>
                     <div style="font-size: 16px; font-weight: bold;">Colegio Integral La Arboleda</div>
                 </div>
-            </a>
+            </button>
         </div>
     </div>
 
     <script>
         const BOOT_STATE = window.__SCHOOL_BOOT || { activeSchool: 'seeds', isStandalone: false, isIOS: false, isInstallMode: false };
         
-        // Datos simplificados
+        // Datos simplificados (Mantén tus textos reales aquí)
         const INSTITUTIONS_DATA = {
             seeds: {
                 name: 'Little Seeds Montessori',
@@ -295,53 +297,61 @@
         };
 
         let activeInstitution = BOOT_STATE.activeSchool;
-
-        // ==========================================
-        // LÓGICA DEL MODO INSTALACIÓN
-        // ==========================================
         let deferredPrompt = null;
 
+        // Capturamos el evento de instalación si Chrome lo permite
         window.addEventListener('beforeinstallprompt', (e) => {
             e.preventDefault();
             deferredPrompt = e;
         });
 
+        // ==========================================
+        // LÓGICA DEL MODO INSTALACIÓN EXCLUSIVO
+        // ==========================================
         if (BOOT_STATE.isInstallMode) {
-            // Ocultar la web normal
             document.getElementById('main-header').classList.add('hidden');
             document.getElementById('tab-inicio').classList.add('hidden');
             document.getElementById('tab-niveles').classList.add('hidden');
-            
-            // Mostrar pantalla de instalación
             document.getElementById('install-screen').classList.remove('hidden');
             
             const data = INSTITUTIONS_DATA[activeInstitution];
             document.getElementById('install-logo').src = data.logo;
             document.getElementById('install-title').innerHTML = data.titleHtml;
-            document.getElementById('install-desc').textContent = `Instala la aplicación oficial de ${data.name} en tu pantalla de inicio.`;
 
             const btn = document.getElementById('btn-native-install');
-            const status = document.getElementById('install-status');
+            const fallback = document.getElementById('fallback-alert');
 
             if (BOOT_STATE.isIOS) {
-                btn.style.display = 'none';
-                status.innerHTML = `Para instalar: Toca <b>Compartir</b> (el cuadro con la flecha) y selecciona <b>Añadir a pantalla de inicio</b>.`;
-                status.style.color = '#1d8fe1';
+                // Si es iOS, no hay botón mágico, solo instrucciones
+                btn.innerHTML = '📲 Abrir en Safari';
+                btn.onclick = () => window.location.href = `./?colegio=${activeInstitution}`;
+                fallback.style.display = 'block';
+                fallback.innerHTML = '<h4>🍎 Instrucciones para iPhone/iPad</h4><p>1. Toca el botón <b>Compartir</b> en Safari.<br>2. Selecciona <b>Añadir a pantalla de inicio</b>.<br>3. Toca <b>Agregar</b>.</p>';
+                fallback.style.background = '#eff6ff'; fallback.style.border = '1px solid #93c5fd';
+                fallback.querySelector('h4').style.color = '#1e3a8a'; fallback.querySelector('p').style.color = '#1e40af';
             } else {
+                // Si es Android
                 btn.addEventListener('click', async () => {
                     if (deferredPrompt) {
                         deferredPrompt.prompt();
                         const { outcome } = await deferredPrompt.userChoice;
                         if (outcome === 'accepted') {
-                            status.innerText = '¡Instalación iniciada! Revisa tu pantalla de inicio.';
+                            btn.innerHTML = '✅ Instalación iniciada';
+                            btn.style.background = '#16a34a';
                         }
                         deferredPrompt = null;
                     } else {
-                        status.style.color = '#e83f44';
-                        status.innerText = 'Si no aparece el aviso, toca los 3 puntos (⋮) arriba a la derecha y elige "Instalar aplicación".';
+                        // Si Chrome bloqueó el aviso automático, mostramos la alerta roja
+                        fallback.style.display = 'block';
                     }
                 });
+
+                // Si después de 1.5 segundos no hay prompt, mostramos la alerta por si acaso
+                setTimeout(() => {
+                    if (!deferredPrompt) fallback.style.display = 'block';
+                }, 1500);
             }
+
         } else {
             // ==========================================
             // LÓGICA NORMAL DE LA WEB
@@ -398,17 +408,17 @@
         }
 
         function openAppDownloadModal() {
-            const baseUrl = window.location.origin + window.location.pathname;
-            
-            // Los enlaces apuntan al MODO INSTALACIÓN (?install=true)
-            document.getElementById('btn-install-seeds').href = `${baseUrl}?colegio=seeds&install=true`;
-            document.getElementById('btn-install-arboleda').href = `${baseUrl}?colegio=arboleda&install=true`;
-
             document.getElementById('app-download-modal').classList.remove('hidden');
         }
 
         function closeAppDownloadModal() {
             document.getElementById('app-download-modal').classList.add('hidden');
+        }
+
+        // Redirigir a la pantalla de instalación pura
+        function goToInstall(col) {
+            const baseUrl = window.location.origin + window.location.pathname;
+            window.location.href = `${baseUrl}?colegio=${col}&install=true`;
         }
     </script>
 </body>
