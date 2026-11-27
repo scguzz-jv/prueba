@@ -1912,4 +1912,307 @@
                 <button type="button" class="filter-chip ${activeBlogGradeFilter === grade ? 'active' : ''}" onclick="filterBlogByGrade('${grade.replace(/'/g, "\\'")}')">
                     ${escapeHtml(grade)}
                 </button>
-            `
+            `).join('');
+        }
+
+        function filterBlogByGrade(grade) {
+            activeBlogGradeFilter = grade;
+            renderBlogCards(INSTITUTIONS_DATA[activeInstitution]?.blog || []);
+        }
+
+        function renderBlogCards(posts = []) {
+            const grid = document.getElementById('blog-posts-grid');
+            if (!grid) return;
+
+            renderBlogFilterBar();
+
+            const indexed = posts.map((post, idx) => ({ post, idx }));
+            const filtered = activeBlogGradeFilter === 'Todos'
+                ? indexed
+                : indexed.filter(({ post }) => (post.grade || 'Todos') === activeBlogGradeFilter);
+
+            if (!filtered.length) {
+                grid.innerHTML = `
+                    <div class="card" style="grid-column: 1 / -1; text-align: center; padding: 32px;">
+                        <p style="font-size: 15px; color: var(--text-muted); font-weight: 700;">No hay publicaciones para "${escapeHtml(activeBlogGradeFilter)}" todavía.</p>
+                    </div>
+                `;
+                return;
+            }
+
+            grid.innerHTML = filtered.map(({ post, idx }) => `
+                <div class="card" style="display: flex; flex-direction: column; justify-content: space-between;">
+                    <div>
+                        <span class="kicker">${escapeHtml(post.tag || 'Artículo')}${post.grade ? ' • ' + escapeHtml(post.grade) : ''}</span>
+                        <h3 style="font-size: 18px; font-weight: 800; margin-bottom: 8px;">${escapeHtml(post.title)}</h3>
+                        <p style="font-size: 13.5px; color: var(--text-muted); margin-bottom: 16px;">${escapeHtml(post.summary || '')}</p>
+                    </div>
+                    <button type="button" class="btn-outline" style="width: 100%; padding: 9px 14px; font-size: 13px;" onclick="openBlogModal(${idx})">Leer artículo</button>
+                </div>
+            `).join('');
+        }
+
+        function updateFormGradeOptions() {
+            const inst = document.getElementById('form-inst').value;
+            const grades = INSTITUTIONS_DATA[inst].grades;
+            document.getElementById('form-grade').innerHTML = grades.map(g => `<option value="${escapeHtml(g)}">${escapeHtml(g)}</option>`).join('');
+        }
+
+        function submitAdmissionForm(e) {
+            e.preventDefault();
+            const student = document.getElementById('form-student').value.trim();
+            const instKey = IS_ISOLATED_APP ? activeInstitution : document.getElementById('form-inst').value;
+            const instName = INSTITUTIONS_DATA[instKey].name;
+            const grade = document.getElementById('form-grade').value;
+            document.getElementById('form-feedback').textContent = `✅ Solicitud recibida para ${student} (${instName} - ${grade}). Nos comunicaremos pronto.`;
+            showToast('✅ Solicitud de inscripción 2027 registrada');
+            e.target.reset();
+            document.getElementById('form-inst').value = instKey;
+            updateFormGradeOptions();
+        }
+
+        function changeMapZoom(delta) {
+            mapZoomLevel = Math.min(1.75, Math.max(0.85, mapZoomLevel + delta));
+            document.getElementById('campus-map-svg').style.transform = `scale(${mapZoomLevel})`;
+        }
+
+        function copyLocationText() {
+            const textToCopy = `${INSTITUTIONS_DATA[activeInstitution].name} - 16 Avenida A 1-05, Sector B1, Ciudad San Cristóbal, Zona 8 de Mixco - Tel: (502) 2393-5249 - WhatsApp: +502 5893 6495`;
+            if (navigator.clipboard && navigator.clipboard.writeText) {
+                navigator.clipboard.writeText(textToCopy);
+            } else {
+                const helper = document.createElement('textarea');
+                helper.value = textToCopy;
+                document.body.appendChild(helper);
+                helper.select();
+                document.execCommand('copy');
+                document.body.removeChild(helper);
+            }
+            showToast('📋 ¡Ubicación copiada al portapapeles!');
+        }
+
+        let toastTimer = null;
+        function showToast(msg) {
+            const toast = document.getElementById('appToast');
+            if (!toast) return;
+            toast.textContent = msg;
+            toast.classList.remove('hidden');
+            if (toastTimer) clearTimeout(toastTimer);
+            toastTimer = setTimeout(() => toast.classList.add('hidden'), 3000);
+        }
+
+        /* ==========================================================================
+           LÓGICA DE INSTALACIÓN CORREGIDA PARA ANDROID E IOS
+           ========================================================================== */
+        const SCHOOL_APP_PROFILES = {
+            seeds: {
+                key: 'seeds',
+                queryParam: 'seeds', 
+                manifestFile: 'manifest-little.json',
+                name: 'Little Seeds Montessori',
+                shortName: 'Little Seeds',
+                logo: 'media/lit.png',
+                themeColor: '#1D8FE1'
+            },
+            arboleda: {
+                key: 'arboleda',
+                queryParam: 'arboleda',
+                manifestFile: 'manifest-arboleda.json',
+                name: 'Colegio Integral La Arboleda',
+                shortName: 'La Arboleda',
+                logo: 'media/arb.png',
+                themeColor: '#006A7A'
+            }
+        };
+
+        function getSchoolAppConfig(instKey = activeInstitution) {
+            const key = instKey === 'arboleda' ? 'arboleda' : 'seeds';
+            const profile = SCHOOL_APP_PROFILES[key];
+            const baseUrl = `${window.location.origin}${window.location.pathname}`;
+            const url = new URL(baseUrl);
+            url.searchParams.set('colegio', profile.queryParam);
+            return {
+                ...profile,
+                appUrl: url.toString()
+            };
+        }
+
+        let deferredInstallPrompt = null;
+        let promptInstitution = null;
+
+        window.addEventListener('beforeinstallprompt', (e) => {
+            e.preventDefault();
+            deferredInstallPrompt = e;
+            promptInstitution = activeInstitution;
+        });
+
+        async function triggerAndroidInstall() {
+            const cfg = getSchoolAppConfig(activeInstitution);
+            
+            if (promptInstitution && promptInstitution !== activeInstitution) {
+                const targetUrl = cfg.appUrl + (cfg.appUrl.includes('?') ? '&' : '?') + 'autoinstall=1';
+                window.location.href = targetUrl;
+                return;
+            }
+
+            syncSchoolManifestLink(cfg.key);
+            
+            if (deferredInstallPrompt) {
+                deferredInstallPrompt.prompt();
+                const choice = await deferredInstallPrompt.userChoice;
+                deferredInstallPrompt = null;
+                promptInstitution = null;
+                if (choice && choice.outcome === 'accepted') {
+                    closeAppDownloadModal();
+                    showToast(`✅ App de ${cfg.name} instalada`);
+                }
+                return;
+            }
+            
+            showToast('⚠️ Usa el menú de Chrome (3 puntos) y elige "Instalar aplicación".');
+        }
+
+        function selectInstitutionFromAppModal(instKey) {
+            if (IS_ISOLATED_APP) return;
+            switchInstitution(instKey);
+            renderAppPlatformSelector();
+        }
+
+        function openAppDownloadModal() {
+            if (IS_ISOLATED_APP) return;
+            const modal = document.getElementById('app-download-modal');
+            if (!modal) return;
+            syncSchoolManifestLink(activeInstitution);
+            modal.classList.remove('hidden');
+            renderAppPlatformSelector();
+        }
+
+        function closeAppDownloadModal() {
+            const modal = document.getElementById('app-download-modal');
+            if (!modal) return;
+            modal.classList.add('hidden');
+        }
+
+        function renderAppPlatformSelector() {
+            const body = document.getElementById('app-download-body');
+            if (!body) return;
+
+            const cfg = getSchoolAppConfig(activeInstitution);
+            const isSeeds = activeInstitution !== 'arboleda';
+
+            body.innerHTML = `
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 8px; margin-bottom: 14px;">
+                    <button type="button" onclick="selectInstitutionFromAppModal('seeds')" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:12px; border:2.5px solid ${isSeeds ? '#1d8fe1' : '#e2e8f0'}; background:${isSeeds ? '#eff6ff' : '#fff'}; cursor:pointer; font-weight:800; font-size:13px; transition: all 0.2s;">
+                        <img src="media/lit.png" alt="Little Seeds" style="width:24px; height:24px; object-fit:contain;">
+                        Little Seeds
+                    </button>
+                    <button type="button" onclick="selectInstitutionFromAppModal('arboleda')" style="display:flex; align-items:center; justify-content:center; gap:8px; padding:10px; border-radius:12px; border:2.5px solid ${!isSeeds ? '#1d8fe1' : '#e2e8f0'}; background:${!isSeeds ? '#eff6ff' : '#fff'}; cursor:pointer; font-weight:800; font-size:13px; transition: all 0.2s;">
+                        <img src="media/arb.png" alt="La Arboleda" style="width:24px; height:24px; object-fit:contain;">
+                        La Arboleda
+                    </button>
+                </div>
+
+                <div class="app-school-badge">
+                    <img src="${escapeHtml(cfg.logo)}" alt="${escapeHtml(cfg.name)}">
+                    <div>
+                        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: var(--primary);">App Independiente</div>
+                        <div style="font-size: 15px; font-weight: 900; color: #0f172a;">${escapeHtml(cfg.name)}</div>
+                    </div>
+                </div>
+
+                <h3 style="font-size: 19px; font-weight: 900; margin: 4px 0 8px;">Instalar App de ${escapeHtml(cfg.shortName)}</h3>
+                <p style="font-size: 13.5px; color: #475569; margin-bottom: 16px;">
+                    Instala esta aplicación dedicada únicamente a <strong>${escapeHtml(cfg.name)}</strong>. Puedes instalar también la del otro colegio como una app separada.
+                </p>
+
+                <div style="display: grid; grid-template-columns: 1fr 1fr; gap: 12px;">
+                    <button type="button" onclick="renderAppSteps('android')" style="padding: 16px 12px; border-radius: 16px; border: 2.5px solid #16a34a; background: #f0fdf4; cursor: pointer; font-weight: 800; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                        🤖 Android
+                    </button>
+                    <button type="button" onclick="renderAppSteps('ios')" style="padding: 16px 12px; border-radius: 16px; border: 2.5px solid #1d8fe1; background: #eff6ff; cursor: pointer; font-weight: 800; font-size: 14px; display: flex; flex-direction: column; align-items: center; gap: 6px;">
+                        🍎 iOS (iPhone / iPad)
+                    </button>
+                </div>
+            `;
+        }
+
+        function renderAppSteps(platform) {
+            const body = document.getElementById('app-download-body');
+            if (!body) return;
+
+            const cfg = getSchoolAppConfig(activeInstitution);
+            const isAndroid = platform === 'android';
+            const title = isAndroid
+                ? `Instalar ${cfg.shortName} en Android`
+                : `Instalar ${cfg.shortName} en iOS`;
+            const badgeColor = isAndroid ? '#16a34a' : '#1d8fe1';
+
+            syncSchoolManifestLink(cfg.key);
+
+            const stepsHtml = isAndroid
+                ? `
+                    <ol style="padding-left: 20px; margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #334155;">
+                        <li>Toca el botón verde <strong>"Instalar App ${escapeHtml(cfg.shortName)}"</strong>.</li>
+                        <li>Si no aparece el aviso automático, toca los <strong>tres puntos (⋮)</strong> en Chrome y elige <strong>Instalar aplicación</strong> o <strong>Agregar a pantalla principal</strong>.</li>
+                        <li>Se creará el acceso independiente de <strong>${escapeHtml(cfg.name)}</strong>.</li>
+                    </ol>
+                `
+                : `
+                    <ol style="padding-left: 20px; margin: 0 0 18px; font-size: 14px; line-height: 1.65; color: #334155;">
+                        <li>Toca el botón azul <strong>"Abrir ${escapeHtml(cfg.shortName)} en Safari"</strong> para cargar la vista exclusiva de <strong>${escapeHtml(cfg.name)}</strong>.</li>
+                        <li>En <strong>Safari</strong>, toca <strong>Compartir</strong> (el cuadro con la flecha hacia arriba) y luego <strong>Agregar a inicio</strong>.</li>
+                        <li>Confirma el nombre <strong>${escapeHtml(cfg.shortName)}</strong> y toca <strong>Agregar</strong>.</li>
+                    </ol>
+                `;
+
+            const primaryActionBtn = isAndroid
+                ? `<button type="button" onclick="triggerAndroidInstall()" style="width: 100%; padding: 13px 16px; border-radius: 13px; border: none; background: ${badgeColor}; color: #fff; font-weight: 800; font-size: 14px; cursor: pointer;">
+                    📲 Instalar App ${escapeHtml(cfg.shortName)}
+                </button>`
+                : `<a href="${escapeHtml(cfg.appUrl)}" style="display: block; text-align: center; padding: 13px 16px; border-radius: 13px; background: ${badgeColor}; color: #fff; font-weight: 800; font-size: 14px; text-decoration: none;">
+                    🔗 Abrir ${escapeHtml(cfg.shortName)} en Safari
+                </a>`;
+
+            body.innerHTML = `
+                <div class="app-school-badge">
+                    <img src="${escapeHtml(cfg.logo)}" alt="${escapeHtml(cfg.name)}">
+                    <div>
+                        <div style="font-size: 11px; font-weight: 800; text-transform: uppercase; color: ${badgeColor};">${isAndroid ? 'Android' : 'iOS (iPhone / iPad)'}</div>
+                        <div style="font-size: 14.5px; font-weight: 900; color: #0f172a;">${escapeHtml(cfg.name)}</div>
+                    </div>
+                </div>
+                <h3 style="font-size: 19px; font-weight: 900; margin: 4px 0 12px;">
+                    ${title}
+                </h3>
+                ${stepsHtml}
+                <div style="display: flex; flex-direction: column; gap: 10px;">
+                    ${primaryActionBtn}
+                    <button type="button" onclick="renderAppPlatformSelector()" style="padding: 10px 14px; border-radius: 12px; border: 1px solid #cbd5e1; background: #ffffff; color: #334155; font-weight: 800; font-size: 13px; cursor: pointer;">
+                        ← Cambiar colegio o plataforma
+                    </button>
+                </div>
+            `;
+        }
+
+        window.addEventListener('DOMContentLoaded', function() {
+            switchInstitution(BOOT_STATE.activeSchool);
+            switchTab('inicio');
+
+            const urlParams = new URLSearchParams(window.location.search);
+            if (urlParams.get('autoinstall') === '1' && !IS_ISOLATED_APP) {
+                urlParams.delete('autoinstall');
+                const newUrl = window.location.pathname + (urlParams.toString() ? '?' + urlParams.toString() : '');
+                window.history.replaceState({}, '', newUrl);
+
+                setTimeout(() => {
+                    openAppDownloadModal();
+                    renderAppSteps('android');
+                    if (deferredInstallPrompt && promptInstitution === activeInstitution) {
+                        triggerAndroidInstall();
+                    }
+                }, 1500);
+            }
+        });
+    </script>
+</body>
+</html>
