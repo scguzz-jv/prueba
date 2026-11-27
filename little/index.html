@@ -1,0 +1,358 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta name="theme-color" content="#1D8FE1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Little Seeds">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="../media/lit.png">
+    <title>Little Seeds Montessori</title>
+    <link rel="stylesheet" href="../shared/css/styles.css?v=1">
+    <script>window.PAGE_CONFIG = { mode: 'app', school: 'seeds', root: '../' };</script>
+    <script src="../shared/js/config.js?v=1"></script>
+</head>
+<body>
+
+    <!-- ==========================================================================
+         ENCABEZADO PRINCIPAL
+         ========================================================================== -->
+    <header>
+        <div class="banner-top">
+            <div class="container banner-inner">
+                <div class="brand-logo-wrap">
+                    <div class="logos-selector" role="group" aria-label="Seleccionar institución">
+                        <div id="selector-seeds" class="logo-emblem-card is-active" onclick="switchInstitution('seeds')" title="Little Seeds Montessori">
+                            <img src="../media/lit.png" alt="Logo Little Seeds Montessori">
+                        </div>
+                        <div id="selector-arboleda" class="logo-emblem-card" onclick="switchInstitution('arboleda')" title="Colegio Integral La Arboleda">
+                            <img src="../media/arb.png" alt="Logo Colegio Integral La Arboleda">
+                        </div>
+                    </div>
+                </div>
+                <div class="header-brand-info">
+                    <div id="header-brand-title" class="header-title-custom"></div>
+                    <div class="contact-links">
+                        <a href="tel:+50223935249">📞 (502) 2393-5249</a>
+                        <a href="https://wa.me/50258936495" target="_blank" rel="noopener noreferrer">💬 WhatsApp: +502 5893 6495</a>
+                        <a href="mailto:mlittleseeds@gmail.com">✉️ mlittleseeds@gmail.com</a>
+                    </div>
+                </div>
+            </div>
+        </div>
+        <nav class="main-navbar" aria-label="Navegación principal">
+            <ul class="nav-list">
+                <li><button class="nav-btn active" data-tab="inicio" onclick="switchTab('inicio')">Inicio</button></li>
+                <li><button class="nav-btn" data-tab="niveles" onclick="switchTab('niveles')">Niveles</button></li>
+                <li><button class="nav-btn" data-tab="calendario" onclick="switchTab('calendario')">Calendario</button></li>
+                <li><button class="nav-btn" data-tab="modelo" onclick="switchTab('modelo')">Modelo educativo</button></li>
+                <li><button class="nav-btn" data-tab="blog" onclick="switchTab('blog')">Blog</button></li>
+                <li><button class="nav-btn" data-tab="inscripcion" onclick="switchTab('inscripcion')">Inscripción 2027</button></li>
+                <li id="nav-item-app-download"><button id="nav-app-blog-btn" class="nav-btn" type="button" onclick="openAppDownloadModal()" style="color: var(--accent);">📲 Descargar App</button></li>
+            </ul>
+        </nav>
+    </header>
+
+    <!-- ==========================================================================
+         PESTAÑA 1: INICIO
+         ========================================================================== -->
+    <main id="tab-inicio" class="tab-content">
+        <section class="hero-wrapper">
+            <div class="container">
+                <div class="hero-box">
+                    <div id="hero-logo-display" class="hero-logo-showcase"></div>
+                    <div>
+                        <span id="hero-kicker" class="kicker"></span>
+                        <h1 id="hero-title"></h1>
+                        <p id="hero-motto" class="hero-subtitle"></p>
+                        <p id="hero-description" class="hero-desc"></p>
+                        <div id="hero-grades-list" class="hero-grades-pills"></div>
+                        <div class="hero-cta-group">
+                            <button class="btn-main" onclick="switchTab('niveles')">Explorar Niveles y Clases</button>
+                            <button class="btn-outline" onclick="switchTab('inscripcion')">Inscripción 2027</button>
+                            <button class="btn-outline" onclick="document.getElementById('contacto-inicio').scrollIntoView({behavior:'smooth'})">Contactos y Ubicación</button>
+                            <button id="hero-app-blog-btn" type="button" class="btn-outline" onclick="openAppDownloadModal()">📲 Descargar App</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Misión, Visión y Valores -->
+        <section class="page-section">
+            <div class="container">
+                <div class="section-header">
+                    <h2 id="mvv-heading">Identidad Institucional</h2>
+                    <p id="mvv-subheading">Pilares que guían nuestra labor educativa diaria.</p>
+                </div>
+                <div class="grid-3">
+                    <div class="card">
+                        <div class="icon-circle">🧭</div>
+                        <h3>Misión</h3>
+                        <p id="mission-text"></p>
+                    </div>
+                    <div class="card">
+                        <div class="icon-circle">🔭</div>
+                        <h3>Visión</h3>
+                        <p id="vision-text"></p>
+                    </div>
+                    <div class="card">
+                        <div class="icon-circle">💎</div>
+                        <h3>Valores</h3>
+                        <p id="values-text"></p>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Continuidad Educativa -->
+        <section id="bridge-section" class="page-section" style="padding-top: 0;">
+            <div class="container">
+                <div class="bridge-card">
+                    <div style="display: flex; flex-wrap: wrap; justify-content: space-between; align-items: center; gap: 20px;">
+                        <div style="max-width: 720px;">
+                            <span class="kicker" id="bridge-kicker"></span>
+                            <h3 id="bridge-title" style="font-size: 22px; font-weight: 800; margin-bottom: 8px;"></h3>
+                            <p id="bridge-text" style="font-size: 14.5px; color: var(--text-muted);"></p>
+                        </div>
+                        <button id="bridge-btn" class="btn-main" onclick="toggleOtherInstitution()"></button>
+                    </div>
+                </div>
+            </div>
+        </section>
+
+        <!-- Contactos y Ubicación -->
+        <section id="contacto-inicio" class="page-section" style="padding-top: 0;">
+            <div class="container">
+                <div class="section-header">
+                    <h2>Contactos y Ubicación</h2>
+                    <p>Agenda una visita personalizada o comunícate con nuestro equipo de admisiones.</p>
+                </div>
+                <div class="grid-2">
+                    <div class="card">
+                        <div class="icon-circle">📍</div>
+                        <h3>Canales de Atención</h3>
+                        <p id="contact-card-desc" style="margin-bottom: 16px;">Atendemos familias interesadas en <strong>Little Seeds Montessori</strong>.</p>
+                        <div style="display: flex; flex-direction: column; gap: 11px; font-size: 14px;">
+                            <div style="padding: 12px 14px; border-radius: 13px; background: rgba(53, 194, 214, 0.18); border: 2px solid var(--primary);">
+                                <strong>Teléfono:</strong> <a href="tel:+50223935249" style="color: var(--primary); font-weight: 800; text-decoration: none;">(502) 2393-5249</a>
+                            </div>
+                            <div style="padding: 12px 14px; border-radius: 13px; background: rgba(108, 192, 46, 0.18); border: 2px solid var(--secondary);">
+                                <strong>WhatsApp:</strong> <a href="https://wa.me/50258936495" target="_blank" rel="noopener noreferrer" style="color: var(--secondary); font-weight: 800; text-decoration: none;">+502 5893 6495</a>
+                            </div>
+                            <div style="padding: 12px 14px; border-radius: 13px; background: rgba(244, 100, 154, 0.16); border: 2px solid #F4649A;">
+                                <strong>Correo:</strong> <a href="mailto:mlittleseeds@gmail.com" style="color: #BE185D; font-weight: 800; text-decoration: none;">mlittleseeds@gmail.com</a>
+                            </div>
+                            <div style="padding: 12px 14px; border-radius: 13px; background: rgba(255, 208, 21, 0.24); border: 2px solid #F59E0B;">
+                                <strong>Dirección y Horario:</strong> 16 Avenida A 1-05, Sector B1, Ciudad San Cristóbal, Zona 8 de Mixco • Lunes a Viernes de 7:30 a.m. a 3:30 p.m.
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="map-card">
+                        <div class="map-canvas-wrap">
+                            <div class="map-zoom-controls">
+                                <button type="button" class="zoom-btn" onclick="changeMapZoom(0.25)" title="Acercar">+</button>
+                                <button type="button" class="zoom-btn" onclick="changeMapZoom(-0.25)" title="Alejar">−</button>
+                            </div>
+                            <svg id="campus-map-svg" viewBox="0 0 600 320" width="100%" height="100%" style="transition: transform 0.25s ease; transform-origin: center;">
+                                <rect width="600" height="320" fill="#E8F6F3"></rect>
+                                <path d="M0 105 H600 M0 215 H600 M165 0 V320 M435 0 V320" stroke="#FFFFFF" stroke-width="18"></path>
+                                <path d="M0 105 H600 M0 215 H600 M165 0 V320 M435 0 V320" stroke="#CBD5E1" stroke-width="2" stroke-dasharray="6,6"></path>
+                                <rect x="195" y="128" width="210" height="66" rx="16" fill="#DCFCE7" stroke="#22C55E" stroke-width="2"></rect>
+                                <text x="300" y="155" text-anchor="middle" font-size="11" font-weight="800" fill="#166534">16 Avenida A 1-05, Sector B1</text>
+                                <text x="300" y="172" text-anchor="middle" font-size="10.5" font-weight="700" fill="#15803D">Ciudad San Cristóbal • Zona 8 Mixco</text>
+                                <g transform="translate(300, 118)">
+                                    <circle cx="0" cy="0" r="14" fill="#E83F44" stroke="#FFFFFF" stroke-width="3"></circle>
+                                    <circle cx="0" cy="0" r="5" fill="#FFFFFF"></circle>
+                                </g>
+                            </svg>
+                            <div class="map-overlay-info">
+                                <div>
+                                    <div id="map-inst-label" style="font-size: 13.5px; font-weight: 800;">Little Seeds Montessori</div>
+                                    <span style="font-size: 12px; color: var(--text-muted);">16 Avenida A 1-05, Sector B1, Ciudad San Cristóbal • Tel: (502) 2393-5249</span>
+                                </div>
+                                <button type="button" onclick="copyLocationText()" style="background: rgba(53, 194, 214, 0.22); color: var(--primary); border: 2px solid var(--primary); border-radius: 10px; padding: 7px 13px; font-size: 12px; font-weight: 800; cursor: pointer;">Copiar</button>
+                            </div>
+                        </div>
+                        <div class="map-external-actions">
+                            <a href="https://maps.app.goo.gl/GEagU6GSPFqQ9hMEA" target="_blank" rel="noopener noreferrer" class="btn-maps-ext" style="background: #1D8FE1;">Google Maps</a>
+                            <a href="https://waze.com/ul/h9fxe4ckee" target="_blank" rel="noopener noreferrer" class="btn-maps-ext" style="background: #006A7A;">Waze</a>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </section>
+    </main>
+
+    <!-- ==========================================================================
+         PESTAÑA 2: NIVELES
+         ========================================================================== -->
+    <section id="tab-niveles" class="tab-content page-section hidden">
+        <div class="container">
+            <div class="section-header">
+                <h2 id="niveles-heading"></h2>
+                <p id="niveles-subheading"></p>
+            </div>
+            <div id="levels-cards-grid"></div>
+            <div class="areas-panel" style="margin-top: 28px;">
+                <h3 id="areas-heading" style="font-size: 20px; font-weight: 800;"></h3>
+                <p id="areas-subheading" style="font-size: 14px; color: var(--text-muted); margin-top: 4px;"></p>
+                <div id="areas-badges-list" class="areas-list"></div>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         PESTAÑA 3: CALENDARIO (SINCRONIZACIÓN EN VIVO CON GOOGLE CALENDAR)
+         ========================================================================== -->
+    <section id="tab-calendario" class="tab-content page-section hidden">
+        <div class="container">
+            <div class="section-header">
+                <span class="kicker">Ciclo Escolar 2027</span>
+                <h2 id="cal-heading"></h2>
+                <p>Consulta las actividades académicas, culturales y familiares programadas.</p>
+            </div>
+            <div class="filter-bar">
+                <button class="filter-chip active" data-trim="all" onclick="filterCalendar('all')">Todos</button>
+                <button class="filter-chip" data-trim="T1" onclick="filterCalendar('T1')">Trimestre I</button>
+                <button class="filter-chip" data-trim="T2" onclick="filterCalendar('T2')">Trimestre II</button>
+                <button class="filter-chip" data-trim="T3" onclick="filterCalendar('T3')">Trimestre III</button>
+            </div>
+            <div id="cal-sync-status" style="text-align: center; font-size: 12.5px; font-weight: 700; color: var(--text-muted); margin-bottom: 18px;"></div>
+            <div id="calendar-events-grid" class="grid-3"></div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         PESTAÑA 4: MODELO EDUCATIVO
+         ========================================================================== -->
+    <section id="tab-modelo" class="tab-content page-section hidden">
+        <div class="container">
+            <div class="modelo-banner">
+                <h2 id="modelo-banner-title"></h2>
+                <p id="modelo-banner-desc"></p>
+            </div>
+            <div id="modelo-pillars-grid" class="grid-3"></div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         PESTAÑA 5: BLOG
+         ========================================================================== -->
+    <section id="tab-blog" class="tab-content page-section hidden">
+        <div class="container">
+            <div class="section-header">
+                <span class="kicker">Comunidad y Familia</span>
+                <div id="blog-title" style="font-size: 29px; font-weight: 800; line-height: 1.22; display: flex; align-items: center; justify-content: center; gap: 8px; flex-wrap: wrap;"></div>
+                <p class="subtitle-text">Orientación pedagógica y consejos prácticos elaborados por nuestro equipo docente.</p>
+                <div style="margin-top: 14px;">
+                    <button id="blog-app-download-btn" type="button" class="btn-main" onclick="openAppDownloadModal()" style="padding: 10px 20px; font-size: 13.5px;">
+                        📲 Descargar App Web
+                    </button>
+                </div>
+            </div>
+            <div id="blog-filter-bar" class="filter-bar"></div>
+            <div id="blog-posts-grid" class="grid-3"></div>
+        </div>
+    </section>
+
+    <!-- Modal universal (Blog, Niveles, Áreas y Eventos del Calendario) -->
+    <div id="blog-modal" class="modal-backdrop hidden" onclick="if(event.target===this) closeBlogModal()">
+        <div class="modal-card">
+            <span id="modal-tag" class="blog-tag"></span>
+            <h3 id="modal-title" style="font-size: 22px; font-weight: 800; margin-bottom: 14px;"></h3>
+            <div id="modal-body"></div>
+            <button id="modal-close-btn" class="btn-main" style="margin-top: 18px;" onclick="closeBlogModal()">Cerrar</button>
+        </div>
+    </div>
+
+    <!-- ==========================================================================
+         PESTAÑA 6: INSCRIPCIÓN 2027
+         ========================================================================== -->
+    <section id="tab-inscripcion" class="tab-content page-section hidden">
+        <div class="container" style="max-width: 820px;">
+            <div class="section-header">
+                <h2>Admisiones e Inscripción 2027</h2>
+                <p>Completa la solicitud en línea para agendar una entrevista y recorrido guiado.</p>
+            </div>
+            <div class="card">
+                <form id="admission-form" onsubmit="submitAdmissionForm(event)">
+                    <div class="form-grid">
+                        <div class="form-group">
+                            <label for="form-inst">Institución de interés</label>
+                            <select id="form-inst" class="input-box" onchange="updateFormGradeOptions()">
+                                <option value="seeds">Little Seeds Montessori</option>
+                                <option value="arboleda">Colegio Integral La Arboleda</option>
+                            </select>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-grade">Grado / Nivel 2027</label>
+                            <select id="form-grade" class="input-box"></select>
+                        </div>
+                        <div class="form-group">
+                            <label for="form-student">Nombre completo del estudiante</label>
+                            <input type="text" id="form-student" class="input-box" required placeholder="Ej. Sofía Morales">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-parent">Nombre del padre, madre o encargado</label>
+                            <input type="text" id="form-parent" class="input-box" required placeholder="Ej. Ana Lucía de Morales">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-phone">Teléfono / WhatsApp</label>
+                            <input type="tel" id="form-phone" class="input-box" required placeholder="Ej. 5555-1234">
+                        </div>
+                        <div class="form-group">
+                            <label for="form-email">Correo electrónico</label>
+                            <input type="email" id="form-email" class="input-box" required placeholder="familia@correo.com">
+                        </div>
+                        <div class="form-group full">
+                            <label for="form-notes">Comentarios o consulta adicional (opcional)</label>
+                            <textarea id="form-notes" class="input-box" rows="3" placeholder="Indícanos si deseas horario extendido o consulta pedagógica..."></textarea>
+                        </div>
+                    </div>
+                    <div style="margin-top: 20px; display: flex; flex-wrap: wrap; gap: 12px; align-items: center;">
+                        <button type="submit" class="btn-main">Enviar Solicitud 2027</button>
+                        <span id="form-feedback" style="font-size: 13.5px; font-weight: 800; color: var(--secondary);"></span>
+                    </div>
+                </form>
+            </div>
+        </div>
+    </section>
+
+    <!-- ==========================================================================
+         MODAL DE DESCARGA APP WEB COMPLETA (ANDROID E IOS POR COLEGIO)
+         ========================================================================== -->
+    <div id="app-download-modal" class="hidden" onclick="if(event.target===this) closeAppDownloadModal()">
+        <div class="app-download-card">
+            <button type="button" onclick="closeAppDownloadModal()" aria-label="Cerrar" style="position: absolute; top: 14px; right: 14px; width: 34px; height: 34px; border-radius: 999px; border: none; background: #f1f5f9; font-weight: 800; cursor: pointer;">
+                ✕
+            </button>
+            <div id="app-download-body"></div>
+        </div>
+    </div>
+
+    <div id="appToast" class="toast-notice hidden"></div>
+
+    <footer>
+        <div class="container footer-grid">
+            <div>
+                <div id="footer-brand-name" style="font-size: 16px; font-weight: 900; color: #FFFFFF;">Little Seeds Montessori &amp; Colegio Integral La Arboleda</div>
+                <div style="font-size: 13px; color: #CBD5E1; margin-top: 4px;">16 Avenida A 1-05, Sector B1, Ciudad San Cristóbal, Zona 8 de Mixco • © 2027</div>
+            </div>
+            <div class="footer-links">
+                <a href="tel:+50223935249">📞 (502) 2393-5249</a>
+                <a href="https://wa.me/50258936495" target="_blank" rel="noopener noreferrer">💬 WhatsApp: +502 5893 6495</a>
+                <a href="mailto:mlittleseeds@gmail.com">✉️ mlittleseeds@gmail.com</a>
+            </div>
+        </div>
+    </footer>
+
+    <script src="../little/data.js?v=1"></script>
+    <script src="../arboleda/data.js?v=1"></script>
+    <script src="../shared/js/app.js?v=1"></script>
+</body>
+</html>
