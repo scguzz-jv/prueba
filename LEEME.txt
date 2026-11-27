@@ -1,0 +1,20 @@
+VERSIÓN DE PRUEBA - SOLO INICIO Y DESCARGAR
+
+Sube la carpeta "prueba" completa a tu repo (queda en tusitio/prueba/). No toca tu sitio actual.
+
+prueba/index.html            -> Web unida (Inicio + Descargar). Sin manifest, no se instala.
+prueba/little/               -> App de Little   (index.html + manifest.json)
+prueba/arboleda/             -> App de La Arboleda (index.html + manifest.json)
+prueba/shared/               -> estilos.css y app.js (compartidos)
+prueba/icons/                -> íconos de PRUEBA (letra L y A). Para usar tus logos reemplaza
+                                 icons/little-180/192/512.png y icons/arboleda-180/192/512.png
+                                 conservando los nombres y tamaños.
+
+CÓMO PROBAR LOS 3 CASOS (en iPhone y en Android)
+Caso 1 - Solo Little:     web -> Descargar -> "Solo Little Seeds" -> te lleva a /little/ -> instalar.
+Caso 2 - Solo Arboleda:   web -> Descargar -> "Solo La Arboleda"  -> te lleva a /arboleda/ -> instalar.
+Caso 3 - Las dos apps:    web -> Descargar -> "Las dos apps" -> instala la primera, vuelve y abre la segunda.
+                           (También funciona desde dentro de una app: pestaña Descargar -> "Las dos apps".)
+
+Antes de cada prueba en iPhone: borra el ícono viejo y limpia datos del sitio en Safari.
+Debe quedar cada ícono con su nombre (Little Seeds / La Arboleda) y abrir su propia app.

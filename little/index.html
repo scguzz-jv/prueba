@@ -1,0 +1,32 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+    <meta name="theme-color" content="#1D8FE1">
+    <meta name="apple-mobile-web-app-capable" content="yes">
+    <meta name="mobile-web-app-capable" content="yes">
+    <meta name="apple-mobile-web-app-status-bar-style" content="default">
+    <meta name="apple-mobile-web-app-title" content="Little Seeds">
+    <link rel="manifest" href="manifest.json">
+    <link rel="apple-touch-icon" href="../icons/little-180.png">
+    <link rel="icon" type="image/png" href="../icons/little-192.png">
+    <title>Little Seeds Montessori</title>
+    <link rel="stylesheet" href="../shared/estilos.css?v=1">
+</head>
+<body>
+    <header class="top"><div class="wrap" id="brand"></div></header>
+    <nav class="tabs" aria-label="Secciones">
+        <button type="button" data-val="inicio" class="on">Inicio</button>
+        <button type="button" data-val="descargar">Descargar</button>
+    </nav>
+    <main class="wrap">
+        <section id="inicio"></section>
+        <section id="descargar" hidden></section>
+        <p class="foot">Versión de prueba · solo Inicio y Descargar</p>
+    </main>
+    <div id="toast" role="status"></div>
+    <script>window.PAGE_CONFIG = { mode: 'app', school: 'little', root: '../' };</script>
+    <script src="../shared/app.js?v=1"></script>
+</body>
+</html>
